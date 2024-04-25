@@ -34,7 +34,7 @@ export default function Sidebar() {
     <div>
         <aside className="sidebar">
             <div className="sidebar__top">
-                <Image src="/logo.png" 
+                <Image src="/logo.jpg" 
                 width={80} 
                 height={80} 
                 className="sidebar__logo"
