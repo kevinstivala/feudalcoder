@@ -1,5 +1,5 @@
 import React from 'react';
-import { sprite } from 'zcanvas';
+import { Sprite, IRenderer, Viewport } from 'zcanvas';
 import { TileDef, TileTypes, TILE_SIZE } from '@/definitions/world-tiles';
 import CACHE from './render-cache';
 
@@ -14,7 +14,7 @@ interface Position {
     y: number;
 }
 
-class WorldRenderer extends sprite {
+class WorldRenderer extends Sprite {
     terrain: TileDef[];
     pos: Position;
 
@@ -29,9 +29,10 @@ class WorldRenderer extends sprite {
         this.pos = { x: 0, y: 0 };
     }
 
-    handleInteraction(x: number, y: number, event: any) {
+    handleInteraction(x: number, y: number, event: MouseEvent | TouchEvent): boolean {
         this.pos.x = x;
         this.pos.y = y;
+        return true;
     }
 
     draw(ctx: CanvasRenderingContext2D) {

@@ -1,58 +1,52 @@
 import { useEffect, useRef } from 'react';
-import { canvas } from 'zcanvas';
-import { mapState } from 'pinia';
+import { Canvas } from 'zcanvas';
 import { useWorldStore } from '../../stores/world';
+import WorldRenderer from '../../renderers/world-render';
 import { TileDef } from '@/definitions/world-tiles';
-import WorldRenderer from '@/renderers/world-renderer';
 
 const MIN_AMOUNT_OF_TILES = 9; // minimum amount of tiles visible on the dominant axis of the screen
 const renderer = new WorldRenderer();
+let zcanvas: any, terrain: TileDef[];
 
-export default function WorldCanvas() {
+const WorldPage = () => {
     const canvasContainerRef = useRef<HTMLDivElement>(null);
-    const { terrain } = useWorldStore(mapState(['terrain']));
+    const terrain = useWorldStore((state) => state.terrain);
 
     useEffect(() => {
-        let zcanvas: any;
+        zcanvas = new Canvas({
+            width: window.innerWidth,
+            height: window.innerHeight,
+            animate: true,
+            smoothing: false,
+            fps: 60,
+            backgroundColor: '#0000FF',
+            onUpdate: updateGame
+        });
 
+        const resizeEvent = 'onorientationchange' in window ? 'orientationchange' : 'resize';
         const handleResize = () => {
-            // Your resize logic here
+            const tileWidth = 20;
+            const tileHeight = 20;
+            const { clientWidth, clientHeight } = document.documentElement;
+            let tilesInWidth, tilesInHeight;
+            if (clientWidth > clientHeight) {
+                tilesInHeight = tileHeight * MIN_AMOUNT_OF_TILES;
+                tilesInWidth = Math.round((clientWidth / clientHeight) * tilesInHeight);
+            } else {
+                tilesInWidth = tileWidth * MIN_AMOUNT_OF_TILES;
+                tilesInHeight = Math.round((clientHeight / clientWidth) * tilesInWidth);
+            }
+            zcanvas.setDimensions(tilesInWidth, tilesInHeight);
+            zcanvas.scale(clientWidth / tilesInWidth, clientHeight / tilesInHeight);
         };
 
-        const updateGame = () => {
-            // Your game update logic here
-        };
-
-        const initCanvas = () => {
-            zcanvas = new canvas({
-                width: window.innerWidth,
-                height: window.innerHeight,
-                animate: true,
-                smoothing: false,
-                fps: 60,
-                onUpdate: updateGame,
-                backgroundColor: '#0000FF'
-            });
-
-            // Attach event handlers
-            const resizeEvent = 'onorientationchange' in window ? 'orientationchange' : 'resize';
-            window.addEventListener(resizeEvent, handleResize);
-
-            zcanvas.insertInPage(canvasContainerRef.current);
-            zcanvas.addChild(renderer);
-        };
-
-        const destroyCanvas = () => {
-            const resizeEvent = 'onorientationchange' in window ? 'orientationchange' : 'resize';
-            window.removeEventListener(resizeEvent, handleResize);
-
-            zcanvas.dispose();
-        };
-
-        initCanvas();
+        window.addEventListener(resizeEvent, handleResize);
+        zcanvas.insertInPage(canvasContainerRef.current);
+        zcanvas.addChild(renderer);
 
         return () => {
-            destroyCanvas();
+            window.removeEventListener(resizeEvent, handleResize);
+            zcanvas.dispose();
         };
     }, []);
 
@@ -60,5 +54,13 @@ export default function WorldCanvas() {
         renderer.setTerrain([...terrain]);
     }, [terrain]);
 
-    return <div ref={canvasContainerRef} className="world-renderer" />;
-}
+    const updateGame = () => {
+        // Any game logic or update routines can be added here
+    };
+
+    return (
+        <div ref={canvasContainerRef} className="world-renderer"></div>
+    );
+};
+
+export default WorldPage;
