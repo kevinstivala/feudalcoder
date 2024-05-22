@@ -1,10 +1,17 @@
-import '@/styles/globals.css'
-import type { AppProps } from 'next/app'
-  
-export default function App(
-    { Component, pageProps }:
-    AppProps) {
-        return <Component {...pageProps}
-        />
-    }
-
+/**
+ * _app.tsx
+ *
+ * Descripción breve...
+*/
+import App from '../App';
+interface MyAppProps {
+  children: React.ReactNode;
+}
+const MyApp: React.FC<MyAppProps> = ({ children }) => {
+  return (
+    <App>
+      {children}
+    </App>
+  );
+};
+export default MyApp;
