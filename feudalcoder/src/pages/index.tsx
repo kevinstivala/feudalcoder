@@ -1,5 +1,13 @@
-import Sidebar from "../components/App";
+// pages/index.js
+import React from 'react';
+import Game from './Game';
 
-export default function Home(){
-    return <><Sidebar /></>
-}
+const Index = () => {
+  return (
+    <div id="root">
+      <Game/>
+    </div>
+  );
+};
+
+export default Index;

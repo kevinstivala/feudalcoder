@@ -1,14 +1,12 @@
-// pages/_app.tsx
+// _app.js
+import React from 'react';
+import { NextComponentType } from 'next';
+import type { AppProps } from 'next/app';
 
-import { AppProps } from 'next/app';
-import { Provider } from 'react-redux';
-import wrapper from '../main'; // Importa el wrapper desde main.tsx
-
-function MyApp({ Component, pageProps }: AppProps) {
+// Corrige los tipos de los parámetros de MyApp
+function MyApp({ Component, pageProps }: AppProps & { Component: NextComponentType }) {
   return (
-    <Provider store={wrapper}>
       <Component {...pageProps} />
-    </Provider>
   );
 }
 
